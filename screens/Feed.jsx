@@ -8,29 +8,32 @@ import {
   FlatList,
   TouchableOpacity,
 } from "react-native";
+import { mealType } from "../spoonacularApiConstants";
 import { Button, Chip } from "react-native-paper";
 import React, { useEffect, useState } from "react";
 import { auth } from "../firebase/config";
 import { useNavigation } from "@react-navigation/core";
 import { useFonts, Pacifico_400Regular } from "@expo-google-fonts/pacifico";
 import AppLoading from "expo-app-loading";
-import { doc, getDoc } from "firebase/firestore";
 import { db } from "../firebase/config";
 import FoodTile from "../components/FoodTile";
-import SearchTile from "../components/SearchTile";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import axios from "axios";
-import BottomTab from "../components/BottomTab";
 import {
   Poppins_500Medium_Italic,
   Poppins_600SemiBold,
   Poppins_400Regular,
 } from "@expo-google-fonts/poppins";
 import MaterialCommunityIcons from "@expo/vector-icons/MaterialCommunityIcons";
+import FontAwesome from "@expo/vector-icons/FontAwesome";
 import randomRecipes from "../dummy";
 import NewTile from "../components/NewTile";
 import FoodTileAlt from "../components/FoodTileAlt";
-import { getLikes, getOthersLikedFeed } from "../controllers/actions";
+import {
+  getLikes,
+  getOthersLikedFeed,
+  setRandomMealsFromTag,
+} from "../controllers/actions";
 import { getUserInfo } from "../controllers/auth";
 
 const SPOONACULAR_API_KEY = "fb5ce892b23346d280b3354db0d10d61";
@@ -39,34 +42,28 @@ const Tab = createBottomTabNavigator();
 const Feed = () => {
   // const [recipes, setRecipes] = useState(randomRecipes);
   const [recipes, setRecipes] = useState([]);
+  const [randomMeals, setRandomMeals] = useState({
+    "main course": [],
+    "side dish": [],
+    "appetizer": [],
+    "dessert": [],
+    "salad": [],
+    "bread": [],
+    "breakfast": [],
+    "soup": [],
+    "beverage": [],
+    "sauce": [],
+    "marinade": [],
+    "fingerfood": [],
+    "snack": [],
+    "drink": [],
+  });
   const [othersLiked, setOthersLiked] = useState(randomRecipes);
   const [othersLikedData, setOthersLikedData] = useState([]);
   const [userData, setUserData] = useState({});
   const [randomTag, setRandomTag] = useState("main course");
-  const [tags, setTags] = useState([
-    {
-      name: "Main Course",
-      selected: true,
-    },
-    {
-      name: "Dessert",
-      selected: false,
-    },
-    {
-      name: "Beverage",
-      selected: false,
-    },
-    {
-      name: "Breakfast",
-      selected: false,
-    },
-    {
-      name: "Italian",
-      selected: false,
-    },
-  ]);
+  const [selectedTag, setSelectedTag] = useState(mealType[0]);
   const userId = auth.currentUser.uid;
-  const docRef = doc(db, "users", userId);
 
   const updateTagStatus = (name) => {
     const updatedTags = tags.map((tag) => {
@@ -86,7 +83,13 @@ const Feed = () => {
   useEffect(() => {
     getUserInfo(auth, db, setUserData);
     getOthersLikedFeed(db, userId, setOthersLikedData);
+    setRandomMealsFromTag(selectedTag, randomMeals, setRandomMeals);
   }, []);
+
+  useEffect(() => {
+    console.log("New tag");
+    setRandomMealsFromTag(selectedTag, randomMeals, setRandomMeals);
+  }, [selectedTag]);
 
   const navigation = useNavigation();
   let [fontsLoaded, error] = useFonts({
@@ -108,37 +111,14 @@ const Feed = () => {
                 <Text styles={styles.titleGreeting}>
                   Hello, {userData.firstName}
                 </Text>
-                <MaterialCommunityIcons
-                  name="magnify"
-                  size={35}
-                  style={styles.search}
+                <TouchableOpacity
                   onPress={() => {
                     navigation.navigate("Search");
                   }}
-                />
+                >
+                  <FontAwesome name="search" size={25} style={styles.search} />
+                </TouchableOpacity>
               </View>
-              {/* <View style={styles.othersTab}>
-                <Text style={styles.tabTitle}>Others Liked</Text>
-                <FlatList
-                  data={othersLiked}
-                  showsHorizontalScrollIndicator={false}
-                  horizontal
-                  keyExtractor={(item) => item.title}
-                  renderItem={({ item }) => {
-                    return (
-                      <FoodTile
-                        id={String(item.id)}
-                        name={item.title}
-                        imgSrc={item.image}
-                        prepTime={item.readyInMinutes}
-                        summary={item.summary}
-                        rawIngredients={item.extendedIngredients}
-                        rawSteps={item.analyzedInstructions[0].steps}
-                      />
-                    );
-                  }}
-                />
-              </View> */}
 
               <View style={styles.othersTab}>
                 <Text style={styles.tabTitle}>Others Liked</Text>
@@ -168,59 +148,61 @@ const Feed = () => {
               <View style={styles.new}>
                 <Text style={styles.tabTitle}>Try Something New</Text>
                 <FlatList
-                  data={tags}
+                  data={mealType}
                   horizontal
-                  keyExtractor={(item) => item.name}
+                  keyExtractor={(item) => item}
                   showsHorizontalScrollIndicator={false}
                   style={{ marginBottom: 20 }}
                   renderItem={({ item }) => {
                     return (
                       <Chip
-                        onPress={() => {
-                          updateTagStatus(item.name);
-                        }}
                         mode="flat"
-                        selected={item.selected}
+                        selected={item === selectedTag}
                         selectedColor="#FFFFFF"
+                        onPress={() => setSelectedTag(item)}
                         style={
-                          item.selected
+                          item === selectedTag
                             ? styles.chipSelected
                             : styles.chipDefault
                         }
                         textStyle={
-                          item.selected
+                          item === selectedTag
                             ? styles.chipTextSelected
                             : styles.chipTextDefault
                         }
                       >
-                        {item.name}
+                        {item}
                       </Chip>
                     );
                   }}
                 />
 
-                <FlatList
-                  data={othersLiked}
-                  showsHorizontalScrollIndicator={false}
-                  onEndReached={() => {
-                    console.log("end reached");
-                  }}
-                  horizontal
-                  keyExtractor={(item) => item.title}
-                  renderItem={({ item }) => {
-                    return (
-                      <NewTile
-                        id={String(item.id)}
-                        name={item.title}
-                        imgSrc={item.image}
-                        prepTime={item.readyInMinutes}
-                        summary={item.summary}
-                        rawIngredients={item.extendedIngredients}
-                        rawSteps={item.analyzedInstructions[0].steps}
-                      />
-                    );
-                  }}
-                />
+                {randomMeals[selectedTag].length >= 1 ? (
+                  <FlatList
+                    data={randomMeals[selectedTag]}
+                    showsHorizontalScrollIndicator={false}
+                    onEndReached={() => {
+                      console.log("end");
+                    }}
+                    horizontal
+                    keyExtractor={(item) => item.title}
+                    renderItem={({ item }) => {
+                      return (
+                        <NewTile
+                          id={String(item.id)}
+                          name={item.title}
+                          imgSrc={item.image}
+                          prepTime={item.readyInMinutes}
+                          summary={item.summary}
+                          rawIngredients={item.extendedIngredients}
+                          rawSteps={item.analyzedInstructions[0].steps}
+                        />
+                      );
+                    }}
+                  />
+                ) : (
+                  <></>
+                )}
               </View>
 
               <View style={styles.fromLikes}>

@@ -1,0 +1,7 @@
+set max sugar intake
+set max calorie intake
+add ingredients you require
+vegetarian option
+intolerances list ?
+excludeCuisine options
+meal type => main course, desert, beverage, snack, drink, etc
