@@ -33,10 +33,12 @@ import {
   getLikes,
   getOthersLikedFeed,
   setRandomMealsFromTag,
+  getSimilarRecipes,
 } from "../controllers/actions";
 import { getUserInfo } from "../controllers/auth";
 
-const SPOONACULAR_API_KEY = "fb5ce892b23346d280b3354db0d10d61";
+//og const SPOONACULAR_API_KEY = "fb5ce892b23346d280b3354db0d10d61";
+const SPOONACULAR_API_KEY = "fbbde4668a8849148fadd3ba8dd69449"; // REPLICA
 const Tab = createBottomTabNavigator();
 
 const Feed = () => {
@@ -60,6 +62,7 @@ const Feed = () => {
   });
   const [othersLiked, setOthersLiked] = useState(randomRecipes);
   const [othersLikedData, setOthersLikedData] = useState([]);
+  const [similarRecipes, setSimilarRecipes] = useState([]);
   const [userData, setUserData] = useState({});
   const [randomTag, setRandomTag] = useState("main course");
   const [selectedTag, setSelectedTag] = useState(mealType[0]);
@@ -83,14 +86,14 @@ const Feed = () => {
   useEffect(() => {
     getUserInfo(auth, db, setUserData);
     getOthersLikedFeed(db, userId, setOthersLikedData);
+    getSimilarRecipes(db, userId, setSimilarRecipes);
     setRandomMealsFromTag(selectedTag, randomMeals, setRandomMeals);
   }, []);
 
   useEffect(() => {
-    console.log("New tag");
     setRandomMealsFromTag(selectedTag, randomMeals, setRandomMeals);
   }, [selectedTag]);
-
+  // console.log("FEED RECOMMENDATIONS: ", similarRecipes);
   const navigation = useNavigation();
   let [fontsLoaded, error] = useFonts({
     Pacifico_400Regular,
@@ -177,7 +180,7 @@ const Feed = () => {
                   }}
                 />
 
-                {randomMeals[selectedTag].length >= 1 ? (
+                {randomMeals && randomMeals[selectedTag].length >= 1 ? (
                   <FlatList
                     data={randomMeals[selectedTag]}
                     showsHorizontalScrollIndicator={false}
@@ -206,9 +209,10 @@ const Feed = () => {
               </View>
 
               <View style={styles.fromLikes}>
-                <Text style={styles.tabTitle}>Based on your Likes</Text>
+                <Text style={styles.tabTitle}>Similar to your Likes</Text>
+
                 <FlatList
-                  data={othersLiked}
+                  data={similarRecipes}
                   showsHorizontalScrollIndicator={false}
                   horizontal
                   keyExtractor={(item) => item.title}
@@ -222,6 +226,9 @@ const Feed = () => {
                         summary={item.summary}
                         rawIngredients={item.extendedIngredients}
                         rawSteps={item.analyzedInstructions[0].steps}
+                        calCount={Math.round(
+                          item.nutrition.nutrients[0].amount
+                        )}
                       />
                     );
                   }}

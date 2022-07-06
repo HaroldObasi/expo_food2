@@ -58,3 +58,6 @@ export const mealType = [
   "snack",
   "drink",
 ];
+
+//export const API_KEY = "563ec2ac4d8a474f87c6f1a2c3cc8f83";
+export const API_KEY = "fbbde4668a8849148fadd3ba8dd69449";

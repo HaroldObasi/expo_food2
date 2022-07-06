@@ -17,6 +17,7 @@ const FoodTileAlt = ({
   rawIngredients,
   rawSteps,
   prepTime,
+  calCount,
 }) => {
   const navigation = useNavigation();
 
@@ -59,6 +60,7 @@ const FoodTileAlt = ({
       ingredients: getIngredients(rawIngredients),
       steps: getSteps(rawSteps),
       prepTime: prepTime,
+      calories: calCount,
     });
   };
 

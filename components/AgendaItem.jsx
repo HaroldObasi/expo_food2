@@ -4,7 +4,9 @@ import React from "react";
 const AgendaItem = ({ mealTitle, mealCalCount }) => {
   return (
     <View style={styles.container}>
-      <Text>{mealTitle}</Text>
+      <Text style={{ width: 300 }} numberOfLines={1}>
+        {mealTitle}
+      </Text>
       <Text>{mealCalCount}</Text>
     </View>
   );

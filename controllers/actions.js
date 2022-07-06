@@ -14,6 +14,7 @@ import {
   onSnapshot,
   Timestamp,
 } from "firebase/firestore";
+import { API_KEY } from "../spoonacularApiConstants";
 import axios from "axios";
 
 export const getLikes = async (db) => {
@@ -60,6 +61,7 @@ export const onLike = async (db, userId, foodData, setter) => {
       recipeSteps: foodData.steps,
       recipeName: foodData.name,
       recipeImgSrc: foodData.imgSrc,
+      recipeCalCount: foodData.calCount,
     });
     try {
       const newUserLikeRef = await updateDoc(userRef, {
@@ -153,6 +155,7 @@ export const addItemToAgenda = async (db, data, userId, myDate) => {
         dataToAdd[data.mealType] = {
           mealName: data.mealName,
           calorieCount: data.mealCalCount,
+          recipeId: data.recipeId,
         };
 
         await updateDoc(existingPlanRef, dataToAdd);
@@ -372,7 +375,8 @@ export const getUserLikedRecipeIds = async (userId, db, setter) => {
 export const setLikedRecipesInfo = async (list, setter) => {
   const results = [];
   var idString = "";
-  const SPOONACULAR_API_KEY = "fb5ce892b23346d280b3354db0d10d61";
+  // OG KEY const SPOONACULAR_API_KEY = "fb5ce892b23346d280b3354db0d10d61";
+  const SPOONACULAR_API_KEY = "fbbde4668a8849148fadd3ba8dd69449"; // REPLICA
 
   console.log("input: ", list);
   for (let x of list) {
@@ -380,7 +384,7 @@ export const setLikedRecipesInfo = async (list, setter) => {
   }
 
   const response = await axios.get(
-    `https://api.spoonacular.com/recipes/informationBulk?ids=${idString}&apiKey=${SPOONACULAR_API_KEY}&includeNutrition=true`
+    `https://api.spoonacular.com/recipes/informationBulk?ids=${idString}&apiKey=${API_KEY}&includeNutrition=true`
   );
 
   setter(response.data);
@@ -391,13 +395,14 @@ export const setRandomMealsFromTag = async (
   randomMeals,
   setter
 ) => {
-  const SPOONACULAR_API_KEY = "fb5ce892b23346d280b3354db0d10d61";
+  //og const SPOONACULAR_API_KEY = "fb5ce892b23346d280b3354db0d10d61";
+  const SPOONACULAR_API_KEY = "fbbde4668a8849148fadd3ba8dd69449"; // REPLICA
   if (randomMeals[selectedTag].length === 0) {
     console.log("not nullll");
 
     try {
       const response = await axios.get(
-        `https://api.spoonacular.com/recipes/random?apiKey=${SPOONACULAR_API_KEY}&tags=${selectedTag}&number=1`
+        `https://api.spoonacular.com/recipes/random?apiKey=${API_KEY}&tags=${selectedTag}&number=5`
       );
       const newObj = { ...randomMeals };
       newObj[selectedTag] = response.data.recipes;
@@ -424,4 +429,55 @@ const generateAgendaItem = (obj) => {
   });
 
   return results;
+};
+
+export const setRecipeCalorieValue = async (id, setter) => {
+  //og const SPOONACULAR_API_KEY = "fb5ce892b23346d280b3354db0d10d61";
+  const SPOONACULAR_API_KEY = "fbbde4668a8849148fadd3ba8dd69449"; // REPLICA
+  try {
+    const response = await axios.get(
+      `https://api.spoonacular.com/recipes/${id}/information?apiKey=${API_KEY}&includeNutrition=true`
+    );
+    const calCount = response.data.nutrition.nutrients[0];
+    console.log("caloriesss: ", calCount);
+    setter(Math.round(Number(calCount.amount)));
+  } catch (error) {
+    console.log(error);
+  }
+};
+
+export const getSimilarRecipes = async (db, userId, setter) => {
+  const recCollection = collection(db, "recommendations");
+  const userRecRef = doc(recCollection, userId);
+  const recIds = [];
+  const results = [];
+  // OG KEY const SPOONACULAR_API_KEY = "fb5ce892b23346d280b3354db0d10d61";
+  const SPOONACULAR_API_KEY = "fbbde4668a8849148fadd3ba8dd69449"; // REPLICA
+
+  try {
+    onSnapshot(userRecRef, async (doc) => {
+      const data = doc.data();
+      if (data.recommendedRecipes) {
+        const recList = data.recommendedRecipes;
+        var idString = recList.join(",");
+
+        try {
+          const response = await axios.get(
+            `https://api.spoonacular.com/recipes/informationBulk?ids=${idString}&apiKey=${API_KEY}&includeNutrition=true`
+          );
+          console.log("NUTRITION: ", response.data[0].nutrition.nutrients[0]);
+
+          setter(response.data);
+        } catch (error) {
+          console.log(error);
+        }
+      } else {
+        console.log("No recommended");
+      }
+
+      // console.log("recipes snapshot 2: ", data);
+    });
+  } catch (error) {
+    console.log(error);
+  }
 };

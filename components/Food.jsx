@@ -25,6 +25,7 @@ import {
   getAgendaItems,
   monitorAgendaItems,
   currentDay,
+  setRecipeCalorieValue,
 } from "../controllers/actions";
 import {
   useFonts,
@@ -37,12 +38,13 @@ import BottomSheet from "reanimated-bottom-sheet";
 
 const Food = ({ route, navigation }) => {
   const userId = auth.currentUser.uid;
-  const { id, title, img, summary, ingredients, steps, prepTime } =
+  const { id, title, img, summary, ingredients, steps, prepTime, calories } =
     route.params;
 
   const [loading, setLoading] = useState(false);
   const [userLikes, setUserLikes] = useState([]);
   const [date, setDate] = useState(currentDay());
+  const [calCount, setCalCount] = useState(0);
   const sheetRef = useRef(null);
   const fall = new Animated.Value(1);
 
@@ -51,6 +53,13 @@ const Food = ({ route, navigation }) => {
   useEffect(() => {
     monitorUserLikes(db, userId, setUserLikes);
     monitorAgendaItems(db, userId, setAgendaItems, date);
+    if (!calories) {
+      console.log("no calories stored");
+      setRecipeCalorieValue(id, setCalCount);
+    } else {
+      console.log("calories stored");
+      setCalCount(calories);
+    }
   }, [date]);
 
   // console.log("agendaa items: ", agendaItems);
@@ -126,7 +135,8 @@ const Food = ({ route, navigation }) => {
                     {
                       mealType: foo,
                       mealName: title,
-                      mealCalCount: "333",
+                      recipeId: id,
+                      mealCalCount: String(calCount) || String(calories),
                     },
                     userId,
                     date
@@ -163,7 +173,8 @@ const Food = ({ route, navigation }) => {
                   {
                     mealType: foo2,
                     mealName: title,
-                    mealCalCount: "333",
+                    recipeId: id,
+                    mealCalCount: String(calCount),
                   },
                   userId,
                   date
@@ -262,6 +273,7 @@ const Food = ({ route, navigation }) => {
                                 steps: steps,
                                 name: title,
                                 imgSrc: img,
+                                calCount: calCount,
                               },
                               setLoading
                             )
@@ -302,7 +314,10 @@ const Food = ({ route, navigation }) => {
               {renderInstructions(steps)}
             </View>
             <View style={styles.infoTiles}>
-              <InfoTile title="Energy" value="554 KCal" />
+              <InfoTile
+                title="Energy"
+                value={!calories ? `${calCount} KCal` : `${calories} Kcal`}
+              />
               <InfoTile title="Prep Time" value={prepTime || "N/A"} />
             </View>
           </ScrollView>

@@ -107,7 +107,7 @@ const Signup = () => {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.alt}>or</Text>
+        {/* <Text style={styles.alt}>or</Text>
 
         <View style={styles.buttonholder2}>
           <TouchableOpacity
@@ -120,7 +120,7 @@ const Signup = () => {
           >
             <Text style={styles.text}>Create Account with Google</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         <TouchableOpacity
           onPress={() => {

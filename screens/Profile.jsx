@@ -1,4 +1,11 @@
-import { StyleSheet, Text, View, SafeAreaView, ScrollView } from "react-native";
+import {
+  StyleSheet,
+  Text,
+  View,
+  SafeAreaView,
+  ScrollView,
+  RefreshControl,
+} from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import { handleLogout } from "../controllers/auth";
 import { Button, Avatar } from "react-native-paper";
@@ -91,7 +98,7 @@ const Profile = () => {
         <View style={styles.pHolder}>
           <Avatar.Text
             size={112}
-            label={userData.firstName}
+            label={userData.firstName ? userData.firstName.substring(0, 2) : ""}
             style={{ backgroundColor: "#E05D5D" }}
           />
           <Text style={styles.nameField}>{userData.firstName}</Text>

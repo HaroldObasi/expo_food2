@@ -12,6 +12,7 @@ import {
   intolerances as iList,
   mealType as mList,
   cuisine as cList,
+  API_KEY,
 } from "../spoonacularApiConstants";
 import {
   Searchbar,
@@ -33,7 +34,8 @@ import MultiSlider from "@ptomasroos/react-native-multi-slider";
 
 import axios from "axios";
 
-const SPOONACULAR_API_KEY = "fb5ce892b23346d280b3354db0d10d61";
+//og const SPOONACULAR_API_KEY = "fb5ce892b23346d280b3354db0d10d61";
+const SPOONACULAR_API_KEY = "fbbde4668a8849148fadd3ba8dd69449"; // REPLICA
 
 import React, { useState } from "react";
 
@@ -117,7 +119,7 @@ const SearchScreen = () => {
   const generateQuery = () => {
     const [minCal, maxCal] = calorieRange;
     const [minSugar, maxSugar] = sugarRange;
-    var query = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${SPOONACULAR_API_KEY}&number=5&query=${searchQuery}&fillIngredients=true&addRecipeInformation=true`;
+    var query = `https://api.spoonacular.com/recipes/complexSearch?apiKey=${API_KEY}&number=5&query=${searchQuery}&fillIngredients=true&addRecipeInformation=true`;
     var mealTypeString = mealType.join(",");
     var intolerancesString = intolerances.join(",");
     var cuisineString = cuisine.join(",");

@@ -68,7 +68,7 @@ const Login = () => {
           </TouchableOpacity>
         </View>
 
-        <Text style={styles.alt}>or</Text>
+        {/* <Text style={styles.alt}>or</Text>
 
         <View style={styles.buttonholder2}>
           <TouchableOpacity
@@ -77,7 +77,7 @@ const Login = () => {
           >
             <Text style={styles.text}>Log In Alt</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
 
         <TouchableOpacity
           onPress={() => {
