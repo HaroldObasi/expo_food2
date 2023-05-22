@@ -189,7 +189,7 @@ const Food = ({ route, navigation }) => {
                   color: "white",
                 }}
               >
-                New Agenda
+                New Item
               </Text>
             </Button>
           </View>

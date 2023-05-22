@@ -6,7 +6,8 @@ import {
   ScrollView,
   RefreshControl,
 } from "react-native";
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { handleLogout } from "../controllers/auth";
 import { Button, Avatar } from "react-native-paper";
 import { auth, db } from "../firebase/config";
@@ -32,6 +33,14 @@ const Profile = () => {
   const fall = new Animated.Value(1);
   const [userData, setUserData] = useState({});
   const [likedRecipes, setLikedRecipes] = useState([]);
+
+  // useEffect();
+
+  useFocusEffect(
+    useCallback(() => {
+      getUserInfo(auth, db, setUserData);
+    }, [])
+  );
 
   useEffect(() => {
     getUserInfo(auth, db, setUserData);

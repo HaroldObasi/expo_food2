@@ -11,9 +11,7 @@ import { auth, db } from "../firebase/config";
 import { useNavigation } from "@react-navigation/core";
 import React, { useState, useEffect } from "react";
 import { handleSignup } from "../controllers/auth";
-import { onAuthStateChanged } from "firebase/auth";
 import { Pacifico_400Regular } from "@expo-google-fonts/pacifico";
-import { AppLoading } from "expo";
 import {
   useFonts,
   Poppins_300Light,
@@ -28,17 +26,6 @@ const Signup = () => {
   const [confirmPassword, setConfirmPassword] = useState("");
 
   const navigation = useNavigation();
-  // console.log("user, signup page: ", auth);
-
-  // useEffect(() => {
-  //   const unsubscribe = onAuthStateChanged(auth, (user) => {
-  //     if (user) {
-  //       navigation.navigate("App");
-  //     }
-  //   });
-
-  //   return unsubscribe;
-  // }, []);
 
   useEffect(() => {
     console.log("Signup");
@@ -54,7 +41,7 @@ const Signup = () => {
   return (
     <SafeAreaView>
       <KeyboardAvoidingView style={styles.container} behavior="padding">
-        <Text style={styles.title}>Create Account</Text>
+        <Text style={styles.title}>Sign up!</Text>
 
         <MaterialTI
           label="First Name"
@@ -106,21 +93,6 @@ const Signup = () => {
             <Text style={styles.text}>Create Account</Text>
           </TouchableOpacity>
         </View>
-
-        {/* <Text style={styles.alt}>or</Text>
-
-        <View style={styles.buttonholder2}>
-          <TouchableOpacity
-            style={[
-              styles.button,
-              {
-                width: 250,
-              },
-            ]}
-          >
-            <Text style={styles.text}>Create Account with Google</Text>
-          </TouchableOpacity>
-        </View> */}
 
         <TouchableOpacity
           onPress={() => {

@@ -68,10 +68,11 @@ export const handleLogout = async (auth) => {
 export const getUserInfo = async (auth, db, setter) => {
   const userId = auth.currentUser.uid;
   const docRef = doc(db, "users", userId);
-  console.log("testinggg");
+
+  console.log("user is ");
+
   try {
     const docSnap = await getDoc(docRef);
-    console.log("doc snap: ", docSnap.data());
     setter(docSnap.data());
     // setter2(docSnap.data().likes);
   } catch (error) {

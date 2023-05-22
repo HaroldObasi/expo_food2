@@ -30,7 +30,6 @@ import axios from "axios";
 const Planner = () => {
   const userId = auth.currentUser.uid;
   const [selectedDate, setSelectedDate] = useState(currentDay());
-  // const [items, setItems] = useState({});
   const [agendaData, setAgendaData] = useState(null);
   const [trueData, setTrueData] = useState({});
   const navigation = useNavigation();
@@ -133,18 +132,6 @@ const Planner = () => {
   };
 
   useEffect(() => {
-    // async () => {
-    //   try {
-    //     var foo = await getAgendasMultiple(db, userId, selectedDate, generateAgendaItem, setTrueData, trueData);
-    //     for (let x of foo) {
-    //       var holder = Object.assign(trueData, generateAgendaItem(x));
-    //       setTrueData(holder);
-    //     }
-    //     console.log("effect: ", trueData);
-    //   } catch (error) {
-    //     console.log(error);
-    //   }
-    // };
     getAgendasMultiple(
       db,
       userId,
