@@ -93,7 +93,8 @@ const Feed = () => {
   useEffect(() => {
     setRandomMealsFromTag(selectedTag, randomMeals, setRandomMeals);
   }, [selectedTag]);
-  // console.log("FEED RECOMMENDATIONS: ", similarRecipes);
+
+  console.log("FEED RECOMMENDATIONS: ", similarRecipes);
   const navigation = useNavigation();
   let [fontsLoaded, error] = useFonts({
     Pacifico_400Regular,
@@ -123,7 +124,7 @@ const Feed = () => {
                 </TouchableOpacity>
               </View>
 
-              <View style={styles.othersTab}>
+              {/* <View style={styles.othersTab}>
                 <Text style={styles.tabTitle}>Others Liked</Text>
                 <FlatList
                   data={othersLikedData}
@@ -146,7 +147,7 @@ const Feed = () => {
                     );
                   }}
                 />
-              </View>
+              </View> */}
 
               <View style={styles.new}>
                 <Text style={styles.tabTitle}>Try Something New</Text>
@@ -198,7 +199,7 @@ const Feed = () => {
                           prepTime={item.readyInMinutes}
                           summary={item.summary}
                           rawIngredients={item.extendedIngredients}
-                          rawSteps={item.analyzedInstructions[0].steps}
+                          rawSteps={item?.analyzedInstructions[0]?.steps}
                         />
                       );
                     }}
@@ -225,7 +226,7 @@ const Feed = () => {
                         prepTime={item.readyInMinutes}
                         summary={item.summary}
                         rawIngredients={item.extendedIngredients}
-                        rawSteps={item.analyzedInstructions[0].steps}
+                        rawSteps={item?.analyzedInstructions[0]?.steps}
                         calCount={Math.round(
                           item.nutrition.nutrients[0].amount
                         )}
